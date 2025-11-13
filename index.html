@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DarkFitness — Transform Your Body</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;scroll-behavior:smooth;}
+    body{
+      color:#fff;
+      background:linear-gradient(135deg,#12002f,#7f00ff,#002bff,#9b0000,#000);
+      background-attachment:fixed;
+      overflow-x:hidden;
+    }
+
+    /* Splash */
+    #splash-screen{
+      position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;
+      background:radial-gradient(circle at center,#000 0%,#12002f 60%,#000 100%);
+      z-index:9999;
+      color:#fff;
+    }
+    #splash-screen .logo{
+      font-size:90px;font-weight:800;background:linear-gradient(90deg,#b3b3b3,#00e5ff,#a020f0);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      text-shadow:0 0 25px rgba(0,229,255,0.3);
+      animation:logoPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes logoPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+    .loading-bar{width:200px;height:8px;background:rgba(255,255,255,0.1);border-radius:999px;overflow:hidden;margin-top:18px;}
+    .loading-bar::after{
+      content:"";display:block;width:0;height:100%;
+      background:linear-gradient(90deg,#7f00ff,#002bff,#ff0000);
+      animation:loading 3s forwards;
+    }
+    @keyframes loading{to{width:100%}}
+
+    /* Navbar */
+    .navbar{
+      position:sticky;top:0;z-index:1000;
+      background:rgba(0,0,0,0.4);backdrop-filter:blur(10px);
+      display:flex;justify-content:space-between;align-items:center;
+      padding:15px 40px;border-bottom:1px solid rgba(255,255,255,0.1);
+    }
+    .nav-logo{
+      display:flex;align-items:center;gap:10px;
+      font-size:28px;font-weight:700;
+      background:linear-gradient(90deg,#00e5ff,#a020f0);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      text-shadow:0 0 25px rgba(0,229,255,0.3);
+    }
+    .nav-links{display:flex;gap:25px;align-items:center;}
+    .nav-links a{
+      text-decoration:none;color:#fff;font-weight:500;position:relative;font-size:15px;
+    }
+    .nav-links a::after{
+      content:"";position:absolute;bottom:-5px;left:0;width:0;height:2px;
+      background:linear-gradient(90deg,#7f00ff,#ff0000);
+      transition:.3s;
+    }
+    .nav-links a:hover::after{width:100%}
+    .hamburger{display:none;font-size:28px;cursor:pointer;color:#fff;}
+
+    /* Hero */
+    #hero{
+      min-height:70vh;display:flex;justify-content:center;align-items:center;padding:60px 20px;text-align:center;
+    }
+    .hero-card{
+      background:rgba(255,255,255,0.08);
+      background: transparent;
+      backdrop-filter:blur(10px);
+      border-radius:20px;padding:50px;max-width:750px;
+      box-shadow:0 0 30px rgba(0,0,0,0.5);
+    }
+    .hero-card h1{
+      font-size:44px;font-weight:800;
+      background:linear-gradient(270deg,#b3b3b3,#00e5ff,#a020f0,#b3b3b3);
+      background-size:600% 600%;
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      animation:premiumGlow 8s ease-in-out infinite;
+      text-shadow:0 0 15px rgba(0,229,255,0.5);
+    }
+    @keyframes premiumGlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    .hero-card p{margin-top:15px;color:#eaeaea;font-size:16px;}
+    .btn{
+      display:inline-block;margin-top:25px;padding:12px 35px;border-radius:30px;
+      background:linear-gradient(90deg,#7f00ff,#002bff,#ff0000);
+      color:#fff;font-weight:600;text-decoration:none;
+      transition:.3s;
+    }
+    .btn:hover{transform:translateY(-3px);box-shadow:0 0 25px rgba(255,255,255,0.3);}
+
+    /* Sections */
+    section{padding:80px 20px;text-align:center;}
+    h2{font-size:32px;margin-bottom:35px;}
+    .ai-box,.exercise-card,.diet-card,.about-card{
+      background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);
+      background: transparent;
+      border-radius:20px;border:1px solid rgba(255,255,255,0.08);
+      padding:25px;box-shadow:0 0 20px rgba(0,0,0,0.4);
+    }
+
+    select,button.input-btn{
+      padding:10px 20px;border:none;border-radius:8px;margin:8px;
+      background:rgba(255,255,255,0.1);color:#fff;cursor:pointer;
+      transition:.3s;font-weight:600;
+    }
+    button.input-btn:hover{background:rgba(255,255,255,0.2)}
+
+    .exercise-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-top:20px;}
+    .exercise-card h3{color:#00e5ff;margin-bottom:8px;}
+    .timer{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+    .time-display{background:rgba(255,255,255,0.1);padding:8px 15px;border-radius:10px;}
+    .timer button{padding:8px 15px;border-radius:10px;border:none;color:#fff;font-weight:600;cursor:pointer;}
+    .start{background:linear-gradient(90deg,#002bff,#7f00ff);}
+    .stop{background:linear-gradient(90deg,#444,#000);}
+
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:768px){.two-col{grid-template-columns:1fr}}
+
+    /* Footer */
+    footer{
+      background:rgba(0,0,0,0.6);backdrop-filter:blur(20px);
+      text-align:center;padding:50px 20px;
+      border-top:1px solid rgba(255,255,255,0.1);
+    }
+    .footer-logo{
+      font-size:34px;font-weight:800;background:linear-gradient(90deg,#00e5ff,#a020f0);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      text-shadow:0 0 20px rgba(0,229,255,0.4);
+    }
+    .socials{display:flex;justify-content:center;gap:20px;margin:20px 0;}
+    .socials a{
+      width:45px;height:45px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,0.1);color:#fff;font-size:22px;transition:.3s;
+    }
+    .socials a:hover{transform:scale(1.1);background:rgba(255,255,255,0.3)}
+    footer p{color:#ccc;font-size:14px;}
+
+    /* Responsive */
+    @media(max-width:900px){
+      .nav-links{display:none;position:absolute;top:65px;right:20px;flex-direction:column;background:rgba(0,0,0,0.9);padding:20px;border-radius:10px;}
+      .nav-links.active{display:flex;}
+      .hamburger{display:block;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- Splash -->
+<div id="splash-screen">
+  <div class="logo">A</div>
+  <div class="loading-bar"></div>
+  <p>Loading Your Fitness Journey...</p>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-logo"><i class="bi bi-activity"></i> DarkFitness</div>
+  <div class="nav-links" id="nav-links">
+    <a href="#hero">Home</a>
+    <a href="#ai-suggest">AI Suggest</a>
+    <a href="#exercises">Exercises</a>
+    <a href="#diet">Diet</a>
+    <a href="#about">About</a>
+    <a href="#footer">Contact</a>
+  </div>
+  <div class="hamburger" id="hamburger"><i class="bi bi-list"></i></div>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <div class="hero-card">
+    <h1>Break your limits then break them again.</h1>
+    <p>“Train. Transform. Dominate.”
+Your only competition is the person in the mirror.</p>
+    <a href="#ai-suggest" class="btn">Get Started</a>
+  </div>
+</section>
+
+<!-- AI Suggest -->
+<section id="ai-suggest">
+  <h2>AI Workout Suggestions 🤖</h2>
+  <div class="ai-box">
+    <select id="workout-type">
+      <option value="">Select category</option>
+      <option value="belly">Belly Fat</option>
+      <option value="chest">Chest</option>
+      <option value="arms">Arms</option>
+      <option value="legs">Legs</option>
+      <option value="shoulders">Shoulders</option>
+      <option value="back">Back</option>
+      <option value="cardio">Cardio</option>
+      <option value="stretching">Stretching</option>
+    </select>
+    <button id="get-suggestion" class="input-btn">Get Suggestion</button>
+    <div id="suggestion-output" style="margin-top:15px;font-weight:600"></div>
+  </div>
+</section>
+
+<!-- Exercises -->
+<section id="exercises">
+  <h2>🔥 Full Body Exercises</h2>
+  <div class="exercise-grid">
+    <div class="exercise-card" data-name="Plank"><h3>Plank</h3><p>💪 Core Strength</p><p class="cal-rate" style="display:none">5</p><div class="timer"><div class="time-display">00:00 | 🔥 0 cal</div><button class="start">Start</button><button class="stop">Stop</button></div></div>
+    <div class="exercise-card" data-name="Jumping Jacks"><h3>Jumping Jacks</h3><p>🏃‍♂️ Cardio</p><p class="cal-rate" style="display:none">8</p><div class="timer"><div class="time-display">00:00 | 🔥 0 cal</div><button class="start">Start</button><button class="stop">Stop</button></div></div>
+    <div class="exercise-card" data-name="Push-ups"><h3>Push-ups</h3><p>💪 Chest</p><p class="cal-rate" style="display:none">7</p><div class="timer"><div class="time-display">00:00 | 🔥 0 cal</div><button class="start">Start</button><button class="stop">Stop</button></div></div>
+    <div class="exercise-card" data-name="Squats"><h3>Squats</h3><p>🦵 Legs</p><p class="cal-rate" style="display:none">6</p><div class="timer"><div class="time-display">00:00 | 🔥 0 cal</div><button class="start">Start</button><button class="stop">Stop</button></div></div>
+    <div class="exercise-card" data-name="Mountain Climbers"><h3>Mountain Climbers</h3><p>⛰️ Belly</p><p class="cal-rate" style="display:none">9</p><div class="timer"><div class="time-display">00:00 | 🔥 0 cal</div><button class="start">Start</button><button class="stop">Stop</button></div></div>
+    <div class="exercise-card" data-name="Burpees"><h3>Burpees</h3><p>🔥 Cardio</p><p class="cal-rate" style="display:none">10</p><div class="timer"><div class="time-display">00:00 | 🔥 0 cal</div><button class="start">Start</button><button class="stop">Stop</button></div></div>
+  </div>
+</section>
+
+<!-- Diet -->
+<section id="diet">
+  <h2>🥗 Best Diet Plan</h2>
+  <div class="two-col">
+    <div class="diet-card"><h3>💪 Fat Loss Plan</h3><p>🌅 Breakfast: Oats + Banana + 2 roti 1bowl Daal</p><p>🍱 Lunch: Grilled Chicken + Veggies + salad</p><p>🌇 Dinner: 1 roti 1bowl Daal + Salad</p></div>
+    <div class="diet-card"><h3>🏋️ Muscle Gain Plan</h3><p>🌅 Breakfast: Eggs + Toast</p><p>🍱 Lunch: Brown Rice + Chicken</p><p>🌇 Dinner: Paneer + Veggies</p></div>
+  </div>
+</section>
+
+<!-- About -->
+<section id="about">
+  <h2>About DarkFitness</h2>
+  <div class="two-col">
+    <div class="about-card"><h3>💥 Motivation</h3><p>Your only limit is you — push harder every day!</p></div>
+    <div class="about-card"><h3>⚡🗿 Discipline </h3><p>• Discipline is doing what must be done, even when no one’s watching. Discipline builds power. Consistency creates greatness.
+</p></div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer id="footer">
+  <div class="footer-logo"><i class="bi bi-activity"></i> DarkFitness</div>
+  <div class="socials">
+    <a href="https://www.instagram.com/ashish336633?igsh=bTh4cHZ2OWFwbW51"><i class="bi bi-instagram"></i></a>
+    <a href="#"><i class="bi bi-twitter-x"></i></a>
+    <a href="#"><i class="bi bi-linkedin"></i></a>
+    <a href="#"><i class="bi bi-youtube"></i></a>
+  </div>
+  <p>© 2025 DarkFitness. All Rights Reserved.</p>
+</footer>
+
+<script>
+/* ===========================
+   DarkFitness - script.js
+   Complete JavaScript (uncut)
+   =========================== */
+
+/* ---------------------------
+   Helpers
+----------------------------*/
+const $ = (sel, ctx = document) => ctx.querySelector(sel);
+const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+
+function safeParseInt(text, fallback = 5) {
+  if (!text) return fallback;
+  const n = parseInt(String(text).replace(/\D/g, ''), 10);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+/* ---------------------------
+   SPLASH SCREEN
+   fades out after load
+----------------------------*/
+window.addEventListener('load', () => {
+  const splash = document.getElementById('splash-screen');
+  if (!splash) return;
+  // keep a short minimum visible time for nicer UX
+  const MIN_VISIBLE = 900; // ms
+  const start = performance.now();
+  // If some async resources still loading, this will still run after load event.
+  setTimeout(() => {
+    const elapsed = performance.now() - start;
+    const remaining = Math.max(0, MIN_VISIBLE - elapsed);
+    setTimeout(() => {
+      splash.style.transition = 'opacity 0.7s ease';
+      splash.style.opacity = '0';
+      setTimeout(() => {
+        if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
+      }, 720);
+    }, remaining);
+  }, 120); // small delay so loading bar finishes
+});
+
+/* ---------------------------
+   NAVBAR (HAMBURGER)
+----------------------------*/
+(function initNav() {
+  const ham = document.getElementById('hamburger');
+  const navLinks = document.getElementById('nav-links');
+  if (!ham || !navLinks) return;
+
+  ham.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+    ham.setAttribute('aria-expanded', navLinks.classList.contains('active') ? 'true' : 'false');
+  });
+
+  // close menu when link clicked
+  $$('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => navLinks.classList.remove('active'));
+  });
+})();
+
+/* ---------------------------
+   AI WORKOUT SUGGESTIONS
+----------------------------*/
+(function initAI() {
+  const suggestionOutput = document.getElementById('suggestion-output');
+  const getSuggestionBtn = document.getElementById('get-suggestion');
+  const workoutType = document.getElementById('workout-type');
+  if (!getSuggestionBtn || !workoutType || !suggestionOutput) return;
+
+  const aiSuggestions = {
+    belly: [
+      "Plank — 3 × 60s",
+      "Mountain Climbers — 4 × 20",
+      "Russian Twists — 3 × 25",
+      "Bicycle Crunches — 4 × 20",
+      "Leg Raises — 3 × 15"
+    ],
+    chest: [
+      "Push-ups — 4 × 12",
+      "Chest Press — 4 × 10",
+      "Incline Dumbbell Press — 3 × 12",
+      "Chest Flyes — 3 × 12",
+      "Diamond Push-ups — 3 × 10"
+    ],
+    arms: [
+      "Bicep Curls — 4 × 12",
+      "Tricep Dips — 3 × 15",
+      "Hammer Curls — 3 × 12",
+      "Overhead Tricep Extension — 3 × 12"
+    ],
+    legs: [
+      "Squats — 4 × 15",
+      "Lunges — 3 × 12 each",
+      "Jump Squats — 3 × 10",
+      "Calf Raises — 4 × 20"
+    ],
+    shoulders: [
+      "Overhead Press — 3 × 12",
+      "Lateral Raises — 4 × 15",
+      "Arnold Press — 3 × 12"
+    ],
+    back: [
+      "Pull-ups — 4 × 8",
+      "Deadlifts — 4 × 6",
+      "Bent-over Rows — 4 × 10"
+    ],
+    cardio: [
+      "Running — 20 min",
+      "Jump Rope — 10 min",
+      "Burpees — 3 × 15",
+      "High Knees — 4 × 30s"
+    ],
+    stretching: [
+      "Hamstring Stretch — 30s",
+      "Child's Pose — 60s",
+      "Quad Stretch — 30s each"
+    ]
+  };
+
+  getSuggestionBtn.addEventListener('click', () => {
+    const cat = workoutType.value;
+    if (!cat) {
+      suggestionOutput.textContent = '⚠️ Please select a category first!';
+      suggestionOutput.style.color = '#ffdede';
+      return;
+    }
+    const list = aiSuggestions[cat] || ['No suggestions available'];
+    const pick = list[Math.floor(Math.random() * list.length)];
+    suggestionOutput.textContent = `💡 AI Suggestion: ${pick}`;
+    suggestionOutput.style.color = ''; // reset color
+  });
+})();
+
+/* ---------------------------
+   EXERCISE TIMERS (All cards)
+   - Independent start/stop per card
+   - Calorie calculation using cal-rate element (hidden)
+   - Persist state to localStorage every 5s and on unload
+----------------------------*/
+const TimerManager = (function () {
+  const STORAGE_KEY = 'darkfitness_timers_v1';
+
+  // read existing saved times (format: [{name, seconds}, ...])
+  function loadSaved() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return {};
+      const arr = JSON.parse(raw);
+      if (!Array.isArray(arr)) return {};
+      const map = {};
+      arr.forEach(item => {
+        if (item && item.name) map[item.name] = Number(item.seconds) || 0;
+      });
+      return map;
+    } catch (e) {
+      console.warn('Failed to load saved timers', e);
+      return {};
+    }
+  }
+
+  function saveAll(state) {
+    try {
+      const arr = Object.keys(state).map(name => ({ name, seconds: state[name] }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    } catch (e) {
+      console.warn('Failed to save timers', e);
+    }
+  }
+
+  // Public init
+  function init() {
+    const saved = loadSaved();
+    const cards = $$('.exercise-card');
+    const managerState = {}; // { name: seconds }
+
+    cards.forEach((card, idx) => {
+      const name = card.dataset.name || `exercise_${idx}`;
+      const display = $('.time-display', card);
+      const startBtn = $('.start', card);
+      const stopBtn = $('.stop', card);
+      const calRateEl = $('.cal-rate', card);
+      const calRate = safeParseInt(calRateEl ? calRateEl.textContent : null, 5);
+
+      // initial seconds (load saved or 0)
+      let seconds = Number(saved[name] || 0);
+      managerState[name] = seconds;
+
+      // interval handle
+      let intervalId = null;
+
+      function formatDisplay(sec) {
+        const mm = String(Math.floor(sec / 60)).padStart(2, '0');
+        const ss = String(sec % 60).padStart(2, '0');
+        const burned = Math.round((sec / 60) * calRate);
+        return `${mm}:${ss} | 🔥 ${burned} cal`;
+      }
+
+      // render initial
+      if (display) display.textContent = formatDisplay(seconds);
+
+      // safe guards
+      if (!startBtn || !stopBtn || !display) return;
+
+      startBtn.addEventListener('click', () => {
+        // prevent starting twice
+        if (intervalId) return;
+        // start ticking
+        intervalId = setInterval(() => {
+          seconds += 1;
+          managerState[name] = seconds;
+          display.textContent = formatDisplay(seconds);
+        }, 1000);
+        // update button states
+        startBtn.disabled = true;
+        startBtn.setAttribute('aria-pressed', 'true');
+        stopBtn.disabled = false;
+      });
+
+      stopBtn.addEventListener('click', () => {
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+        managerState[name] = seconds;
+        startBtn.disabled = false;
+        startBtn.setAttribute('aria-pressed', 'false');
+        stopBtn.disabled = false;
+      });
+
+      // Accessibility: double-click start toggles stop
+      startBtn.addEventListener('dblclick', () => {
+        if (intervalId) {
+          stopBtn.click();
+        } else {
+          startBtn.click();
+        }
+      });
+
+      // restore disabled state if already running in other tab? we can't detect that.
+    });
+
+    // periodic persist
+    const saveInterval = setInterval(() => saveAll(managerState), 5000);
+
+    // save on unload/visibilitychange
+    const saveNow = () => saveAll(managerState);
+    window.addEventListener('beforeunload', saveNow);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) saveNow();
+    });
+
+    // return a teardown if needed
+    return {
+      stop() {
+        clearInterval(saveInterval);
+        window.removeEventListener('beforeunload', saveNow);
+      }
+    };
+  }
+
+  return { init };
+})();
+
+/* initialize timers */
+document.addEventListener('DOMContentLoaded', () => {
+  TimerManager.init();
+});
+
+/* ---------------------------
+   SMOOTH SCROLL for anchor links
+----------------------------*/
+(function initSmoothScroll() {
+  const OFFSET = 70;
+
+  function ease(t) {
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  }
+
+  function smoothScrollTo(targetY, duration = 700) {
+    const startY = window.pageYOffset;
+    const distance = targetY - startY;
+    const start = performance.now();
+
+    function frame(now) {
+      const time = Math.min(1, (now - start) / duration);
+      const eased = ease(time);
+      window.scrollTo(0, Math.round(startY + distance * eased));
+      if (time < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  $$('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const href = a.getAttribute('href');
+      if (!href || href === '#') return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      const top = target.getBoundingClientRect().top + window.pageYOffset - OFFSET;
+      smoothScrollTo(top, 700);
+      // hide mobile nav if open
+      const nav = document.getElementById('nav-links');
+      if (nav && nav.classList.contains('active')) nav.classList.remove('active');
+    });
+  });
+})();
+
+/* ---------------------------
+   KEYBOARD SHORTCUTS
+   - Space toggles first exercise start/stop
+   - Number keys 1..9 toggle respective card (if present)
+----------------------------*/
+(function initKeyboard() {
+  document.addEventListener('keydown', (e) => {
+    // do nothing if user typing into form control
+    const tag = document.activeElement && document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || document.activeElement.isContentEditable) return;
+
+    // space toggles first card
+    if (e.code === 'Space') {
+      e.preventDefault();
+      const first = document.querySelector('.exercise-card');
+      if (!first) return;
+      const start = first.querySelector('.start');
+      const stop = first.querySelector('.stop');
+      if (!start || !stop) return;
+      if (start.disabled) stop.click(); else start.click();
+      return;
+    }
+
+    // number keys 1..9
+    if (/Digit[1-9]/.test(e.code)) {
+      const idx = Number(e.code.replace('Digit', '')) - 1;
+      const cards = $$('.exercise-card');
+      if (cards[idx]) {
+        const start = $('.start', cards[idx]);
+        const stop = $('.stop', cards[idx]);
+        if (!start || !stop) return;
+        if (start.disabled) stop.click(); else start.click();
+      }
+    }
+  });
+})();
+
+/* ---------------------------
+   Accessibility: prefers-reduced-motion
+----------------------------*/
+(function reduceMotion() {
+  try {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (mq && mq.matches) {
+      // disable CSS animations where possible by adding an attribute
+      document.documentElement.setAttribute('data-reduced-motion', 'true');
+      // stop any JS-driven animation loops if any (none currently)
+    }
+  } catch (e) {
+    // ignore
+  }
+})();
+
+/* ---------------------------
+   Misc: ensure no console errors if elements missing
+----------------------------*/
+(function safeInitMisc() {
+  // ensure AI suggestion elements exist - if not, hide the section gracefully
+  if (!document.getElementById('get-suggestion') || !document.getElementById('workout-type')) {
+    const section = document.getElementById('ai-suggest');
+    if (section) section.style.display = 'none';
+  }
+
+  // if no exercise cards, hide exercise section
+  if ($$('.exercise-card').length === 0) {
+    const sec = document.getElementById('exercises');
+    if (sec) sec.style.display = 'none';
+  }
+})();
+/* ===========================
+   AUTO ADD 50 EXERCISES
+   =========================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const grid = document.querySelector(".exercise-grid");
+  if (!grid) return;
+
+  // 50 mixed exercises with name, emoji, type, and calorie burn rate
+  const exercises = [
+    ["Plank","💪","Core",5],["Push-ups","💥","Chest",7],["Squats","🦵","Legs",6],
+    ["Lunges","🏋️‍♀️","Legs",7],["Mountain Climbers","⛰️","Belly",9],
+    ["Burpees","🔥","Cardio",10],["Jumping Jacks","🏃‍♂️","Cardio",8],
+    ["Crunches","🤸‍♂️","Abs",6],["Side Plank","🧘‍♂️","Core",5],
+    ["High Knees","⚡","Cardio",9],["Tricep Dips","🦾","Arms",6],
+    ["Bicep Curls","💪","Arms",7],["Leg Raises","⬆️","Core",6],
+    ["Calf Raises","🦿","Legs",5],["Glute Bridge","🍑","Glutes",6],
+    ["Russian Twists","🌀","Core",7],["Pull-ups","🏋️‍♂️","Back",9],
+    ["Chin-ups","🤸‍♀️","Back",8],["Jump Squats","⚡","Legs",8],
+    ["Flutter Kicks","🦶","Abs",6],["Wall Sit","🧍‍♂️","Legs",5],
+    ["Superman","🦸‍♂️","Back",6],["Shadow Boxing","🥊","Cardio",9],
+    ["Skipping Rope","🤾‍♂️","Cardio",8],["Bear Crawl","🐻","Full Body",9],
+    ["Inchworm","🪱","Stretch",5],["Tuck Jumps","🦘","Legs",10],
+    ["Plank Jacks","💥","Core",8],["Donkey Kicks","🐴","Glutes",6],
+    ["Fire Hydrant","🔥","Glutes",6],["Bridge March","🚶‍♂️","Core",5],
+    ["Pike Push-ups","⬇️","Shoulders",8],["Reverse Crunch","🔄","Abs",7],
+    ["Side Lunges","↔️","Legs",6],["Sumo Squats","🐘","Legs",7],
+    ["Shoulder Taps","🤚","Arms",6],["Arm Circles","⭕","Shoulders",5],
+    ["Step-ups","🪜","Legs",7],["Climbers Cross","⚡","Core",8],
+    ["Reverse Plank","🔙","Core",5],["Jump Lunges","💥","Legs",9],
+    ["Half Burpees","💢","Cardio",9],["Hip Thrust","🔥","Glutes",6],
+    ["Spiderman Plank","🕷️","Core",7],["Skater Hops","⛸️","Cardio",8],
+    ["V-Ups","🆙","Abs",8],["Cobra Stretch","🐍","Stretch",4],
+    ["Child’s Pose","🧘‍♀️","Stretch",3],["Cat Cow","🐱","Stretch",3],
+    ["Standing Toe Touch","🦶","Stretch",3],["Jump Rope Sprints","🏃‍♀️","Cardio",10]
+  ];
+
+  exercises.forEach(([name, emoji, type, cal]) => {
+    const card = document.createElement("div");
+    card.className = "exercise-card";
+    card.dataset.name = name;
+    card.innerHTML = `
+      <h3>${name} ${emoji}</h3>
+      <p>${type}</p>
+      <p class="cal-rate" style="display:none">${cal}</p>
+      <div class="timer">
+        <div class="time-display">00:00 | 🔥 0 cal</div>
+        <button class="start">Start</button>
+        <button class="stop">Stop</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // Reinitialize timers for the newly added exercises
+  document.querySelectorAll(".exercise-card").forEach(card => {
+    const startBtn = card.querySelector(".start");
+    const stopBtn = card.querySelector(".stop");
+    const display = card.querySelector(".time-display");
+    const rate = parseInt(card.querySelector(".cal-rate").textContent) || 5;
+
+    let seconds = 0;
+    let interval = null;
+
+    function render() {
+      const m = String(Math.floor(seconds / 60)).padStart(2,"0");
+      const s = String(seconds % 60).padStart(2,"0");
+      const cal = Math.round((seconds / 60) * rate);
+      display.textContent = `${m}:${s} | 🔥 ${cal} cal`;
+    }
+
+    startBtn.addEventListener("click", () => {
+      if (interval) return;
+      interval = setInterval(() => { seconds++; render(); }, 1000);
+      startBtn.disabled = true;
+    });
+
+    stopBtn.addEventListener("click", () => {
+      clearInterval(interval);
+      interval = null;
+      startBtn.disabled = false;
+    });
+
+    render();
+  });
+
+  console.log("✅ 50 exercises added successfully!");
+});
+
+/* End of script.js */
+</script>
+</body>
+</html>
